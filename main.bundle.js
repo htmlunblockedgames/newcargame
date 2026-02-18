@@ -9751,6 +9751,102 @@
               , ee = 0
               , te = 0
               , ne = 0;
+            const ie2 = new Map
+              , re2 = []
+              , ae2 = new Set
+              , se2 = new WeakMap;
+            let oe2 = !1;
+            const le2 = e => {
+                const t = "function" == typeof requestIdleCallback ? requestIdleCallback : e => setTimeout(e, 0);
+                t(e)
+            }
+              , ce2 = e => e instanceof HTMLCanvasElement ? (() => {
+                const t = document.createElement("canvas");
+                t.width = e.width,
+                t.height = e.height;
+                const n = t.getContext("2d");
+                return null == n ? console.error("Failed to get 2D context for track thumbnail canvas") : n.drawImage(e, 0, 0),
+                t
+            }
+            )() : e
+              , he2 = e => {
+                let t = ie2.get(e);
+                return null == t && (t = {
+                    state: "idle",
+                    value: "images/empty.svg",
+                    trackDataFactory: null,
+                    subscribers: new Set
+                },
+                ie2.set(e, t)),
+                t
+            }
+              , de2 = e => {
+                for (const t of e.subscribers)
+                    t(ce2(e.value));
+                e.subscribers.clear()
+            }
+              , ue2 = () => {
+                if (oe2 || 0 == re2.length)
+                    return;
+                oe2 = !0,
+                le2((async () => {
+                    const e = re2.shift();
+                    if (null == e)
+                        return void (oe2 = !1);
+                    ae2.delete(e);
+                    const t = he2(e);
+                    if ("ready" != t.state && "failed" != t.state)
+                        if (null == t.trackDataFactory)
+                            t.state = "failed",
+                            t.value = "images/empty.svg",
+                            de2(t);
+                        else {
+                            t.state = "loading";
+                            try {
+                                const e = await t.trackDataFactory();
+                                t.value = await e.createThumbnail(),
+                                t.state = "ready"
+                            } catch (e) {
+                                console.warn("Failed to generate community track thumbnail:", e),
+                                t.value = "images/empty.svg",
+                                t.state = "failed"
+                            }
+                            de2(t)
+                        }
+                    oe2 = !1,
+                    ue2()
+                }
+                ))
+            }
+              , pe2 = (e, t) => {
+                const n = he2(e);
+                null != t && (n.trackDataFactory = t),
+                "ready" != n.state && "failed" != n.state && "loading" != n.state && !ae2.has(e) && (ae2.add(e),
+                re2.push(e),
+                ue2())
+            }
+              , fe2 = (e, t) => {
+                const n = he2(e);
+                return n.subscribers.add(t),
+                () => {
+                    n.subscribers.delete(t)
+                }
+            }
+              , ge2 = e => {
+                const t = ie2.get(e);
+                return null == t ? null : ce2(t.value)
+            }
+              , me2 = e => {
+                for (const t of (0,
+                i.gn)(e, B, "f")) {
+                    const n = (0,
+                    i.gn)(e, x, "f").getRecordTime((0,
+                    i.gn)(e, E, "f").profileSlot, t.trackId);
+                    t.recordElement.textContent = null != n ? X.A.formatTimeString(n) : (0,
+                    i.gn)(e, w, "f").get("No record")
+                }
+            }
+            ;
             y = new WeakMap,
             w = new WeakMap,
             b = new WeakMap,
@@ -9862,34 +9958,33 @@
                 }
                 const u = document.createElement("button");
                 let p = null;
-                let f = null;
-                const k = async () => {
-                    if (o instanceof HTMLCanvasElement || "community" != e || "string" != typeof o)
-                        return o;
-                    return null == p && (p = (async () => {
-                        try {
-                            return o = (await a()).createThumbnail(),
-                            o
-                        } catch (e) {
-                            return console.warn("Failed to generate community track thumbnail:", e),
-                            o = "images/empty.svg",
-                            o
+                const f = e => {
+                    if (o = e,
+                    e instanceof HTMLCanvasElement) {
+                        const t = ce2(e);
+                        p?.replaceWith(t),
+                        p = t
+                    } else if (p instanceof HTMLImageElement)
+                        p.src = e;
+                    else {
+                        const t = document.createElement("img");
+                        t.className = "loading",
+                        t.addEventListener("load", ( () => {
+                            t.classList.remove("loading")
                         }
+                        )),
+                        t.src = e,
+                        p?.replaceWith(t),
+                        p = t
                     }
-                    )()),
-                    p
                 }
                 ;
                 u.className = "button",
                 u.addEventListener("click", ( () => {
                     (0,
                     i.gn)(this, b, "f").playUIClick(),
-                    (async () => {
-                        const t = await k();
-                        (0,
-                        i.gn)(this, M, "f").call(this, n, r, a, e, s, t)
-                    }
-                    )()
+                    (0,
+                    i.gn)(this, M, "f").call(this, n, r, a, e, s, "community" == e && "string" == typeof s ? ge2(s) ?? "images/empty.svg" : o)
                 }
                 )),
                 c.appendChild(u);
@@ -9901,7 +9996,7 @@
                 _.appendChild(C),
                 o instanceof HTMLCanvasElement)
                     u.appendChild(o),
-                    f = o;
+                    p = o;
                 else {
                     const t = document.createElement("img");
                     t.loading = "lazy",
@@ -9912,24 +10007,27 @@
                     )),
                     t.src = "community" == e ? "images/empty.svg" : o,
                     u.appendChild(t),
-                    f = t
+                    p = t
                 }
-                "community" == e && "string" == typeof o && (async () => {
-                    const e = await k();
-                    if (e instanceof HTMLCanvasElement) {
-                        if (!(f instanceof HTMLImageElement))
-                            return;
-                        const t = document.createElement("canvas");
-                        t.width = e.width,
-                        t.height = e.height;
-                        const n = t.getContext("2d");
-                        null == n ? console.error("Failed to get 2D context for track thumbnail canvas") : n.drawImage(e, 0, 0),
-                        f.replaceWith(t),
-                        f = t
-                    } else
-                        f instanceof HTMLImageElement && (f.src = e)
+                if ("community" == e && "string" == typeof s) {
+                    const e = ie2.get(s);
+                    if (null != e && ("ready" == e.state || "failed" == e.state))
+                        f(ce2(e.value));
+                    else {
+                        let e = () => {}
+                          , t = !1;
+                        const n = n => {
+                            if (!c.isConnected)
+                                return void e();
+                            f(n),
+                            t || (t = !0,
+                            e())
+                        }
+                        ;
+                        e = fe2(s, n),
+                        pe2(s, a)
+                    }
                 }
-                )();
                 let g;
                 switch (r) {
                 case Z.A.Summer:
@@ -9969,9 +10067,11 @@
                 i.gn)(this, B, "f").push({
                     category: e,
                     group: t,
+                    trackId: s,
                     trackMetadata: n,
                     trackEnvironment: r,
                     trackData: a,
+                    recordElement: v,
                     buttonContainer: c
                 })
             }
@@ -10085,6 +10185,7 @@
                     H.set(this, void 0),
                     j.set(this, void 0),
                     K.set(this, void 0),
+                    se2.set(this, !0),
                     null == e) {
                         const t = document.getElementById("ui");
                         if (null == t)
@@ -10357,7 +10458,9 @@
                     (0,
                     i.gn)(this, S, "f").addCustomTracksChangedListener((0,
                     i.GG)(this, j, ( () => {
-                        this.refresh()
+                        se2.set(this, !0),
+                        (0,
+                        i.gn)(this, O, "f") && this.refresh()
                     }
                     ), "f")),
                     (0,
@@ -10387,7 +10490,7 @@
                     (0,
                     i.gn)(this, x, "f").addRecordChangedCallback((0,
                     i.GG)(this, K, ( () => {
-                        this.refresh()
+                        me2(this)
                     }
                     ), "f"))
                 }
@@ -10421,49 +10524,15 @@
                     i.gn)(this, _, "f").classList.remove("hidden"),
                     (0,
                     i.GG)(this, O, !0, "f"),
-                    this.refresh(),
+                    se2.get(this) ? this.refresh() : me2(this),
                     $ ?? ($ = (0,
                     i.gn)(this, k, "f").loadTrackSelectionTab()),
-                    "official" == $ ? ((0,
-                    i.gn)(this, C, "f").classList.add("selected"),
                     (0,
-                    i.gn)(this, R, "f").classList.remove("selected"),
-                    (0,
-                    i.gn)(this, P, "f").classList.remove("selected"),
-                    (0,
-                    i.gn)(this, I, "f").classList.add("open"),
-                    (0,
-                    i.gn)(this, L, "f").classList.remove("open"),
-                    (0,
-                    i.gn)(this, N, "f").classList.remove("open"),
-                    (0,
-                    i.gn)(this, I, "f").scrollTop = ee) : "community" == $ ? ((0,
-                    i.gn)(this, C, "f").classList.remove("selected"),
-                    (0,
-                    i.gn)(this, R, "f").classList.add("selected"),
-                    (0,
-                    i.gn)(this, P, "f").classList.remove("selected"),
-                    (0,
-                    i.gn)(this, I, "f").classList.remove("open"),
-                    (0,
-                    i.gn)(this, L, "f").classList.add("open"),
-                    (0,
-                    i.gn)(this, N, "f").classList.remove("open"),
-                    (0,
-                    i.gn)(this, L, "f").scrollTop = te) : ((0,
-                    i.gn)(this, C, "f").classList.remove("selected"),
-                    (0,
-                    i.gn)(this, R, "f").classList.remove("selected"),
-                    (0,
-                    i.gn)(this, P, "f").classList.add("selected"),
-                    (0,
-                    i.gn)(this, I, "f").classList.remove("open"),
-                    (0,
-                    i.gn)(this, L, "f").classList.remove("open"),
-                    (0,
-                    i.gn)(this, N, "f").classList.add("open"),
-                    (0,
-                    i.gn)(this, N, "f").scrollTop = ne)
+                    i.gn)(this, v, "m", Q).call(this, $),
+                    "official" == $ ? (0,
+                    i.gn)(this, I, "f").scrollTop = ee : "community" == $ ? (0,
+                    i.gn)(this, L, "f").scrollTop = te : (0,
+                    i.gn)(this, N, "f").scrollTop = ne
                 }
                 get isOpen() {
                     return (0,
@@ -10556,7 +10625,8 @@
                         }
                         ));
                     (0,
-                    i.gn)(this, v, "m", J).call(this)
+                    i.gn)(this, v, "m", J).call(this),
+                    se2.set(this, !1)
                 }
             }
         }
