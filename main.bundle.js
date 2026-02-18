@@ -9861,34 +9861,75 @@
                     e.appendChild(c)
                 }
                 const u = document.createElement("button");
+                let p = null;
+                let f = null;
+                const k = async () => {
+                    if (o instanceof HTMLCanvasElement || "community" != e || "string" != typeof o)
+                        return o;
+                    return null == p && (p = (async () => {
+                        try {
+                            return o = (await a()).createThumbnail(),
+                            o
+                        } catch (e) {
+                            return console.warn("Failed to generate community track thumbnail:", e),
+                            o = "images/empty.svg",
+                            o
+                        }
+                    }
+                    )()),
+                    p
+                }
+                ;
                 u.className = "button",
                 u.addEventListener("click", ( () => {
                     (0,
                     i.gn)(this, b, "f").playUIClick(),
-                    (0,
-                    i.gn)(this, M, "f").call(this, n, r, a, e, s, o)
+                    (async () => {
+                        const t = await k();
+                        (0,
+                        i.gn)(this, M, "f").call(this, n, r, a, e, s, t)
+                    }
+                    )()
                 }
                 )),
                 c.appendChild(u);
-                const p = document.createElement("div");
-                p.className = "track-title",
-                u.appendChild(p);
-                const f = document.createElement("p");
-                if (f.textContent = n.name,
-                p.appendChild(f),
+                const _ = document.createElement("div");
+                _.className = "track-title",
+                u.appendChild(_);
+                const C = document.createElement("p");
+                if (C.textContent = n.name,
+                _.appendChild(C),
                 o instanceof HTMLCanvasElement)
-                    u.appendChild(o);
+                    u.appendChild(o),
+                    f = o;
                 else {
-                    const e = document.createElement("img");
-                    e.loading = "lazy",
-                    e.className = "loading",
-                    e.addEventListener("load", ( () => {
-                        e.classList.remove("loading")
+                    const t = document.createElement("img");
+                    t.loading = "lazy",
+                    t.className = "loading",
+                    t.addEventListener("load", ( () => {
+                        t.classList.remove("loading")
                     }
                     )),
-                    e.src = o,
-                    u.appendChild(e)
+                    t.src = "community" == e ? "images/empty.svg" : o,
+                    u.appendChild(t),
+                    f = t
                 }
+                "community" == e && "string" == typeof o && (async () => {
+                    const e = await k();
+                    if (e instanceof HTMLCanvasElement) {
+                        if (!(f instanceof HTMLImageElement))
+                            return;
+                        const t = document.createElement("canvas");
+                        t.width = e.width,
+                        t.height = e.height;
+                        const n = t.getContext("2d");
+                        null == n ? console.error("Failed to get 2D context for track thumbnail canvas") : n.drawImage(e, 0, 0),
+                        f.replaceWith(t),
+                        f = t
+                    } else
+                        f instanceof HTMLImageElement && (f.src = e)
+                }
+                )();
                 let g;
                 switch (r) {
                 case Z.A.Summer:
@@ -10539,7 +10580,7 @@
               , s = "kodub" == r || "electron" == r || "capacitor" == r || "itch" == r || "crazygames" == r
               , o = !1
               , l = !0
-              , c = "https://vps.kodub.com:43274/"
+              , c = "/__proxy_vps__/"
               , h = i.l$.r;
             if (!Number.isSafeInteger(h) || h < 1)
                 throw new Error("package.json beta version property must be a positive integer");
@@ -47611,23 +47652,6 @@
                 "zh-CN": "错误：加载排行榜失败",
                 "zh-TW": "錯誤：無法載入排行榜"
             },
-            "Unofficial versions of the game cannot access the leaderboard": {
-                ar: "الإصدارات غير الرسمية من اللعبة لا يمكنها الوصول إلى التصنيف",
-                "de-DE": "Inoffizielle Versionen des Spiels können nicht auf die Bestenliste zugreifen",
-                "es-ES": "Las versiones no oficiales del juego no pueden acceder a la tabla de clasificación",
-                "fr-FR": "Les versions non officielles du jeu ne peuvent pas accéder au classement",
-                "it-IT": "Le versioni non ufficiali del gioco non possono accedere alla classifica",
-                "ja-JP": "ゲームの非公式バージョンはリーダーボードにアクセスできません",
-                "ko-KR": "게임의 비공식 버전은 리더보드에 접근할 수 없습니다",
-                "pl-PL": "Nieoficjalne wersje gry nie mogą uzyskać dostępu do tabeli wyników",
-                "pt-BR": "Versões não oficiais do jogo não podem acessar o quadro de líderes",
-                "pt-PT": "Versões não oficiais do jogo não podem acessar a tabela de classificação",
-                "ru-RU": "Неофициальные версии игры не могут получить доступ к таблице лидеров",
-                "tr-TR": "Oyunun resmi olmayan sürümleri liderlik tablosuna erişemez",
-                "uk-UA": "Неофіційні версії гри не можуть отримати доступ до таблиці лідерів",
-                "zh-CN": "游戏的非官方版本无法访问排行榜",
-                "zh-TW": "非官方版本的遊戲無法訪問排行榜"
-            },
             Pending: {
                 ar: "قيد الانتظار",
                 "de-DE": "Ausstehend",
@@ -48546,22 +48570,23 @@
                 "zh-CN": "服务条款",
                 "zh-TW": "服務條款"
             },
-            "It seems like you are playing an unofficial version of {0}. For the most up-to-date version please visit the original source:": {
-                ar: "يبدو أنك تلعب نسخة غير رسمية من {0}. للحصول على أحدث إصدار يرجى زيارة المصدر الأصلي:",
-                "de-DE": "Es scheint, dass Sie eine inoffizielle Version von {0} spielen. Für die aktuellste Version besuchen Sie bitte die Originalquelle:",
-                "es-ES": "Parece que estás jugando una versión no oficial de {0}. Para la versión más actualizada, visita la fuente original:",
-                "fr-FR": "Il semble que vous jouiez à une version non officielle de {0}. Pour la version la plus récente, veuillez visiter la source originale :",
-                "it-IT": "Sembra che tu stia giocando a una versione non ufficiale di {0}. Per la versione più aggiornata visita la fonte originale:",
-                "ja-JP": "{0} の非公式バージョンをプレイしているようです。最新バージョンについては、元のソースをご覧ください:",
-                "ko-KR": "{0}의 비공식 버전을 플레이 중인 것 같습니다. 최신 버전은 원본 소스에서 확인하십시오:",
-                "pl-PL": "Wygląda na to, że grasz w nieoficjalną wersję {0}. Aby uzyskać najnowszą wersję, odwiedź oryginalne źródło:",
-                "pt-BR": "Parece que você está jogando uma versão não oficial de {0}. Para a versão mais atualizada, visite a fonte original:",
-                "pt-PT": "Parece que está a jogar uma versão não oficial de {0}. Para a versão mais atualizada, visite a fonte original:",
-                "ru-RU": "Похоже, вы играете в неофициальную версию {0}. Для самой актуальной версии посетите оригинальный источник:",
-                "tr-TR": "{0} adlı resmi olmayan bir sürüm oynuyor gibi görünüyorsunuz. En güncel sürüm için lütfen orijinal kaynağı ziyaret edin:",
-                "uk-UA": "Здається, ви граєте в неофіційну версію {0}. Для найновішої версії відвідайте оригінальне джерело:",
-                "zh-CN": "您似乎正在玩 {0} 的非官方版本。请访问原始来源获取最新版本：",
-                "zh-TW": "您似乎正在玩非官方版本的 {0}。請訪問原始來源以獲取最新版本："
+            "This is an unofficial version of PolyTrack with extra features to stay unblocked on school devices. The official game has the latest updates, but may be blocked:": {
+                ar: "This is an unofficial version of PolyTrack with extra features to stay unblocked on school devices. The official game has the latest updates, but may be blocked:",
+                "de-DE": "This is an unofficial version of PolyTrack with extra features to stay unblocked on school devices. The official game has the latest updates, but may be blocked:",
+                "en-US": "This is an unofficial version of PolyTrack with extra features to stay unblocked on school devices. The official game has the latest updates, but may be blocked:",
+                "es-ES": "This is an unofficial version of PolyTrack with extra features to stay unblocked on school devices. The official game has the latest updates, but may be blocked:",
+                "fr-FR": "This is an unofficial version of PolyTrack with extra features to stay unblocked on school devices. The official game has the latest updates, but may be blocked:",
+                "it-IT": "This is an unofficial version of PolyTrack with extra features to stay unblocked on school devices. The official game has the latest updates, but may be blocked:",
+                "ja-JP": "This is an unofficial version of PolyTrack with extra features to stay unblocked on school devices. The official game has the latest updates, but may be blocked:",
+                "ko-KR": "This is an unofficial version of PolyTrack with extra features to stay unblocked on school devices. The official game has the latest updates, but may be blocked:",
+                "pl-PL": "This is an unofficial version of PolyTrack with extra features to stay unblocked on school devices. The official game has the latest updates, but may be blocked:",
+                "pt-BR": "This is an unofficial version of PolyTrack with extra features to stay unblocked on school devices. The official game has the latest updates, but may be blocked:",
+                "pt-PT": "This is an unofficial version of PolyTrack with extra features to stay unblocked on school devices. The official game has the latest updates, but may be blocked:",
+                "ru-RU": "This is an unofficial version of PolyTrack with extra features to stay unblocked on school devices. The official game has the latest updates, but may be blocked:",
+                "tr-TR": "This is an unofficial version of PolyTrack with extra features to stay unblocked on school devices. The official game has the latest updates, but may be blocked:",
+                "uk-UA": "This is an unofficial version of PolyTrack with extra features to stay unblocked on school devices. The official game has the latest updates, but may be blocked:",
+                "zh-CN": "This is an unofficial version of PolyTrack with extra features to stay unblocked on school devices. The official game has the latest updates, but may be blocked:",
+                "zh-TW": "This is an unofficial version of PolyTrack with extra features to stay unblocked on school devices. The official game has the latest updates, but may be blocked:"
             },
             Nickname: {
                 ar: "اسم المستخدم",
@@ -52691,19 +52716,11 @@
                     )).catch((e => {
                         if (!n.isCancelled) {
                             const e = document.createElement("p");
-                            if (e.className = "error-message",
+                            e.className = "error-message",
                             e.textContent = (0,
                             R.gn)(this, ho, "f").get("Error: Failed to load leaderboard"),
                             (0,
-                            R.gn)(this, bo, "f").appendChild(e),
-                            Fo()) {
-                                const e = document.createElement("p");
-                                e.className = "error-message",
-                                e.textContent = (0,
-                                R.gn)(this, ho, "f").get("Unofficial versions of the game cannot access the leaderboard"),
-                                (0,
-                                R.gn)(this, bo, "f").appendChild(e)
-                            }
+                            R.gn)(this, bo, "f").appendChild(e)
                         }
                         console.error(e)
                     }
@@ -55612,7 +55629,7 @@
             R.gn)(this, qc, "f")) {
                 (0,
                 R.gn)(this, qc, "f").textContent = (0,
-                R.gn)(this, Pc, "f").get("It seems like you are playing an unofficial version of {0}. For the most up-to-date version please visit the original source:", ["PolyTrack"]);
+                R.gn)(this, Pc, "f").get("This is an unofficial version of PolyTrack with extra features to stay unblocked on school devices. The official game has the latest updates, but may be blocked:");
                 const e = document.createElement("a");
                 e.href = Oo(),
                 e.textContent = Oo(),
