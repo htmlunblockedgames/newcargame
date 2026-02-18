@@ -56532,6 +56532,10 @@
         fd = function(e) {
             return new Promise(( (t, n) => {
                 const i = new XMLHttpRequest;
+                let r = null;
+                "tracks/community/" == e.slice(0, 17) && (r = e,
+                e = "https://polytrack.game-files.crazygames.com/polytrack/6/" + e);
+                let a = !1;
                 i.overrideMimeType("text/plain"),
                 i.onreadystatechange = () => {
                     if (4 == i.readyState)
@@ -56544,7 +56548,11 @@
                                 trackMetadata: n,
                                 trackData: r
                             })
-                        } else
+                        } else if (!a && null != r)
+                            a = !0,
+                            i.open("GET", r, !0),
+                            i.send();
+                        else
                             n(new Tr.A)
                 }
                 ,
@@ -56701,7 +56709,7 @@
                         lastModified: new Date("2026-02-16T03:10:30.000Z")
                     },
                     environment: hl.A.Summer,
-                    trackUrl: "tracks/community/fractured_shores.track",
+                    trackUrl: "tracks/community/fractured_shore.track",
                     thumbnail: "tracks/community/thumbnails/fractured_shores.png"
                 }, {
                     id: "a6b990137e404c9ef2cb4399c463acbed8ebfa3bb82ab5315027118604c4ec03",
@@ -56945,7 +56953,7 @@
                     environment: hl.A.Summer,
                     trackUrl: "tracks/community/concrete_jungle.track",
                     thumbnail: "tracks/community/thumbnails/concrete_jungle.png"
-                }].map((e => ({
+                }].filter((e => "tracks/community/opal_palace_ii.track" != e.trackUrl)).map((e => ({
                     id: e.id,
                     group: e.group,
                     trackMetadata: e.trackMetadata,
