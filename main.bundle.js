@@ -10580,7 +10580,7 @@
               , s = "kodub" == r || "electron" == r || "capacitor" == r || "itch" == r || "crazygames" == r
               , o = !1
               , l = !0
-              , c = "/"
+              , c = "./"
               , h = i.l$.r;
             if (!Number.isSafeInteger(h) || h < 1)
                 throw new Error("package.json beta version property must be a positive integer");
