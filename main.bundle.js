@@ -55705,6 +55705,15 @@
                 e.textContent = Oo(),
                 (0,
                 R.gn)(this, qc, "f").appendChild(e),
+                (() => {
+                    const e = document.createElement("a");
+                    e.href = "https://sites.google.com/view/newcargame/",
+                    e.target = "_blank",
+                    e.textContent = "Find other games and a community hub here: sites.google.com/view/newcargame/",
+                    (0,
+                    R.gn)(this, qc, "f").appendChild(e)
+                }
+                )(),
                 (0,
                 R.gn)(this, qc, "f").classList.remove("hidden")
             }
