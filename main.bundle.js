@@ -62952,8 +62952,16 @@
             const c = document.getElementById("screen");
             if (!(c instanceof HTMLCanvasElement))
                 throw new Error("Screen is not a canvas element");
-            const h = new vt.A(c,r)
-              , d = new Cd
+            let h;
+            try {
+                h = new vt.A(c,r)
+            } catch (e) {
+                const t = e instanceof Error ? e.message : String(e);
+                if (/WebGL context/i.test(t))
+                    throw new Error("WebGL2 initialization failed.\n\nPlease enable hardware acceleration in your browser settings and restart your browser.\nYour browser, device, or enterprise policy may be blocking WebGL.\nTry another browser or device if this continues.\n\nOriginal error: " + t);
+                throw e
+            }
+            const d = new Cd
               , u = d.init(h, t)
               , p = new qu.A(!0,d,t)
               , f = new qu.A(!1,d,t)
